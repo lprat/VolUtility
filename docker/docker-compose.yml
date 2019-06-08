@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+    volutil:
+        image: volutility
+        build:
+            context: .
+            args:
+                - http_proxy=${http_proxy}
+                - https_proxy=${https_proxy}
+                - no_proxy=${no_proxy}
+        #mem_reservation: '512m'
+        #memswap_limit: '1g'
+        #mem_limit: '1g'
+        #cpuset: '1'
+        stdin_open: true
+        tty: true
+        ports:
+#            - "172.17.0.1:8080:8080" #use for nginx reverse proxy
+            - 8080:8080
+        volumes:
+            - ../data:/opt/images
+            - ./volutility.conf:/home/volutility/.volutility.conf
+            - ../dbpath:/home/volutility/dbpath/
+            - ../logs-mongo:/home/volutility/logs/
+            - ../VolUtility:/opt/VolUtility
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+#        logging:
+#            driver: "syslog"
+#            options:
+#                syslog-address: "tcp://172.17.0.1:514"
+#                tag: "docker_{{.ImageName}}_{{.Name}}"
+

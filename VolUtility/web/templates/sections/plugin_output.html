@@ -1,0 +1,98 @@
+{% load template_dict %}
+<h3 class="text-center text-capitalize" id="pluginName">{{plugin_name}}</h3>
+{% if tl_order %}
+<a class="readOnlyTableToggle" href="#read">Display stat timeliner type</a>
+<table class="readOnlyTable">
+    <tr>
+        <th>type</th>
+        <th>count</th>
+    </tr>
+        {% for row in tl_order %}
+            <tr>
+            {% for cell in row %}
+                <td>{{ cell|safe }}</td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+</table>
+{% endif %}
+{% if yara_sortsig %}
+<a class="readOnlyTableToggle" href="#read">Display stat yara by signature</a>
+
+<table class="readOnlyTable">
+    <tr>
+        <th>signature (total match)</th>
+        <th>proccess</th>
+        <th>count</th>
+    </tr>
+        {%  for rows in yara_sortsig %}
+        <tr>
+            {% for cell in rows %}
+                <td>{{ cell|safe }}</td>
+            {%  endfor %}
+        </tr>
+        {% endfor %}
+</table>
+{% endif %}
+{% if yara_sortproc %}
+<br>
+<a class="readOnlyTableToggle2" href="#read">Display stat yara by process</a>
+
+<table class="readOnlyTable2">
+    <tr>
+        <th>process (total match)</th>
+        <th>signature</th>
+        <th>count</th>
+    </tr>
+        {%  for rows in yara_sortproc %}
+        <tr>
+            {% for cell in rows %}
+                <td>{{ cell|safe }}</td>
+            {%  endfor %}
+        </tr>
+        {% endfor %}
+</table>
+{% endif %}
+<table id="resultsTable" class="table table-striped table-bordered table-hover resultsTable nowrap">
+    <thead>
+    <tr>
+        {% for col in plugin_results.columns %}
+        <th>{{ col }}</th>
+        {% endfor %}
+    </tr>
+    </thead>
+
+    <tbody>
+        {%  for row in plugin_results.rows %}
+        <tr>
+            {% for cell in row %}
+                {% if '<br>' in cell %}
+                <td><a class="readOnlyRowsToggle" href="#read">Display</a><div  class="readOnlyRow">{{ cell|safe }}</div></td>
+                {% else %}
+                <td>{{ cell|safe }}</td>
+                {% endif %}
+            {%  endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    var vresultCount = '{{ resultcount }}';
+    var vActivePluginID = '{{ plugin_id }}';
+    var vBookMarks = {{ bookmarks }};
+$(document).ready(function() {
+   $(".readOnlyRow").hide();
+   $(".readOnlyTable").hide();
+   $(".readOnlyTable2").hide();
+   $('.readOnlyRowsToggle').click(function () {
+     $(this).next(".readOnlyRow").toggle($(this).next(".readOnlyRow").css('display') == 'none'); 
+   });
+   $('.readOnlyTableToggle').click(function () {
+     $(this).next(".readOnlyTable").toggle($(this).next(".readOnlyTable").css('display') == 'none');
+   });
+   $('.readOnlyTableToggle2').click(function () {
+     $(this).next(".readOnlyTable2").toggle($(this).next(".readOnlyTable2").css('display') == 'none');
+   });
+});
+</script>
