@@ -1,0 +1,94 @@
+From b99173c1468fc4701dd3d5a291bde8bbbf005676 Mon Sep 17 00:00:00 2001
+From: Oliver Old <oliver.old@outlook.com>
+Date: Fri, 3 Jul 2020 17:33:55 +0200
+Subject: [PATCH] Add fix for missing cookie value when using a Windows 10
+ profile
+
+Use YARA and the DiscontigYaraScanner from malfind to find the address of nt!ObGetObjectType. Also put in a safeguard against TypeError when the nt!ObHeaderCookie value can't be obtained.
+---
+ volatility/plugins/overlays/windows/win10.py | 44 ++++++++++++++++++--
+ 1 file changed, 40 insertions(+), 4 deletions(-)
+
+diff --git a/volatility/plugins/overlays/windows/win10.py b/volatility/plugins/overlays/windows/win10.py
+index dfa6a21c..6ba9bc95 100644
+--- a/volatility/plugins/overlays/windows/win10.py
++++ b/volatility/plugins/overlays/windows/win10.py
+@@ -39,6 +39,13 @@
+ except ImportError:
+     has_distorm = False
+ 
++try:
++    import yara
++    import volatility.plugins.malware.malfind as malfind
++    has_yara = True
++except ImportError:
++    has_yara = False
++
+ class _HMAP_ENTRY(obj.CType):
+ 
+     @property
+@@ -212,10 +219,37 @@ def findcookie(self, kernel_space):
+             debug.warning("Cannot find NT module")
+             return False
+ 
++        model = meta.get("memory_model")
++
+         addr = nt_mod.getprocaddress("ObGetObjectType")
+         if addr == None:
+-            debug.warning("Cannot find nt!ObGetObjectType")
+-            return False 
++            if not has_yara:
++                debug.warning("Cannot find nt!ObGetObjectType")
++                return False
++            # Did not find nt!ObGetObjectType, trying with YARA instead.
++            if model == "32bit":
++                # 8bff   mov edi, edi
++                # 55     push ebp
++                # 8bec   mov ebp, esp
++                # 8b4d08 mov ecx, dword ptr [ebp + 8]
++                # 8d41e8 lea eax, dword ptr [ecx - 0x18]
++                nt_ObGetObjectType_signature = "8bff 55 8bec 8b4d08 8d41e8"
++            else:
++                # 488d41d0 lea rax, qword ptr [rcx - 0x30]
++                # 0fb649e8 movzx ecx, byte ptr [rcx - 0x18]
++                nt_ObGetObjectType_signature = "488d41d0 0fb649e8"
++            rule = 'rule r1 {strings: $a = {%s} condition: $a}' \
++                % nt_ObGetObjectType_signature
++            rules = yara.compile(source = rule)
++            scanner = malfind.DiscontigYaraScanner(
++                address_space = kernel_space,
++                rules = rules)
++            first_match = next(scanner.scan(), None)
++            if not first_match:
++                debug.warning("Cannot find nt!ObGetObjectType")
++                return False
++            _, addr = first_match
++            addr -= nt_mod.DllBase
+ 
+         # produce an absolute address by adding the DLL base to the RVA 
+         addr += nt_mod.DllBase 
+@@ -224,7 +258,6 @@ def findcookie(self, kernel_space):
+             return False 
+ 
+         # in theory...but so far we haven't tested 32-bits 
+-        model = meta.get("memory_model")    
+         if model == "32bit":
+             mode = distorm3.Decode32Bits
+         else:
+@@ -327,6 +360,9 @@ def TypeIndex(self):
+         addr = self.obj_offset 
+         indx = int(self.m("TypeIndex"))
+ 
++        if cook is None:
++            debug.error("Cannot obtain nt!ObHeaderCookie value")
++
+         return ((addr >> 8) ^ cook ^ indx) & 0xFF
+ 
+     def is_valid(self):
+@@ -1120,4 +1156,4 @@ class Win10x64_18362(obj.Profile):
+     _md_minor = 4
+     _md_build = 18362
+     _md_vtype_module = 'volatility.plugins.overlays.windows.win10_x64_18362_vtypes'
+-    _md_product = ["NtProductWinNt"]
+\ No newline at end of file
++    _md_product = ["NtProductWinNt"]
