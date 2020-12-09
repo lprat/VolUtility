@@ -1,0 +1,34 @@
+From c87af872caaf19dcaae4e3e11e7715eb6d760127 Mon Sep 17 00:00:00 2001
+From: exp0se <exp0se@github.com>
+Date: Thu, 5 Sep 2019 16:55:18 +0300
+Subject: [PATCH] Fixed broken BaseYaraScanner
+
+---
+ volatility/plugins/malware/malfind.py | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/volatility/plugins/malware/malfind.py b/volatility/plugins/malware/malfind.py
+index 6fa5113d..475c740c 100644
+--- a/volatility/plugins/malware/malfind.py
++++ b/volatility/plugins/malware/malfind.py
+@@ -107,13 +107,13 @@ def scan(self, offset, maxlen):
+             data = self.address_space.zread(i, to_read)
+             if data:
+                 for rule in rules:
+-                    for match in rule.match(data = data):
+-                        # We currently don't use name or value from the 
+-                        # yara results but they can be yielded in the 
+-                        # future if necessary. 
+-                        for moffset, _name, _value in match.strings:
+-                            if moffset < constants.SCAN_BLOCKSIZE:
+-                                yield match, moffset + i
++                    matches = rule.match(data=data)
++                    if matches:
++                        for k, v in matches.iteritems():
++                            for yara_strings in v[0].get("strings"):
++                                moffset = yara_strings.get("offset")
++                                if moffset < constants.SCAN_BLOCKSIZE:
++                                    yield matches, moffset + i
+ 
+             i += constants.SCAN_BLOCKSIZE
+ 
