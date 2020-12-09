@@ -1,0 +1,23 @@
+diff --git a/volatility/plugins/malware/malfind.py b/volatility/plugins/malware/malfind.py
+index 6fa5113d..55b121ce 100644
+--- a/volatility/plugins/malware/malfind.py
++++ b/volatility/plugins/malware/malfind.py
+@@ -426,6 +426,8 @@ def generator(self, data):
+         if self._config.DUMP_DIR and not os.path.isdir(self._config.DUMP_DIR):
+             debug.error(self._config.DUMP_DIR + " is not a directory")
+ 
++        refined_criteria = ["MZ", "\x55\x8B"]
++
+         for task in data:
+             for vad, address_space in task.get_vads(vad_filter = task._injection_filter):
+ 
+@@ -434,6 +436,9 @@ def generator(self, data):
+ 
+                 content = address_space.zread(vad.Start, 64) 
+ 
++                if self._config.REFINED and content[0:2] not in refined_criteria:
++                    continue
++
+                 yield (0, [str(task.ImageFileName), 
+                            int(task.UniqueProcessId),
+                            Address(vad.Start),
