@@ -1,0 +1,54 @@
+From 25ce6ef2127741b8b6fceb17fbe0528d0504deac Mon Sep 17 00:00:00 2001
+From: Erez Shlingbaum <erez.shlingbaum@gmail.com>
+Date: Wed, 16 Oct 2019 09:27:09 -0700
+Subject: [PATCH 1/2] Linux - fix parse_system_map for ARM architecture
+
+---
+ volatility/plugins/overlays/linux/linux.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/volatility/plugins/overlays/linux/linux.py b/volatility/plugins/overlays/linux/linux.py
+index eb19d344..a84d132c 100644
+--- a/volatility/plugins/overlays/linux/linux.py
++++ b/volatility/plugins/overlays/linux/linux.py
+@@ -153,7 +153,7 @@ def parse_system_map(data, module):
+         except ValueError:
+             continue
+ 
+-        if symbol == "arm_syscall":
++        if symbol == "arm_syscall" or symbol == "compat_arm_syscall":
+             arch = "ARM"
+ 
+         if not symbol in sys_map[module]:
+@@ -192,7 +192,7 @@ def LinuxProfileFactory(profpkg):
+             sysmapdata = profpkg.read(f.filename)
+             arch, memmodel, sysmap = parse_system_map(profpkg.read(f.filename), "kernel")
+ 
+-    if memmodel == "64bit":
++    if memmodel == "64bit" and arch == "x86":
+         arch = "x64"
+ 
+     if not sysmapdata or not dwarfdata:
+
+From 06a1f8a17c0aee720cc67d233521c2f79fcb3e22 Mon Sep 17 00:00:00 2001
+From: Erez Shlingbaum <erez.shlingbaum@gmail.com>
+Date: Wed, 16 Oct 2019 09:37:34 -0700
+Subject: [PATCH 2/2] Added a symbol in the dwarf parser, for ARM64
+ architecture
+
+---
+ volatility/dwarf.py | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/volatility/dwarf.py b/volatility/dwarf.py
+index 89feb713..5768d099 100644
+--- a/volatility/dwarf.py
++++ b/volatility/dwarf.py
+@@ -50,6 +50,7 @@ class DWARFParser(object):
+         'unsigned int': 'unsigned int',
+         'sizetype' : 'unsigned long',
+         'ssizetype' : 'long',
++        '__int128 unsigned': 'unsigned long long',
+     }
+ 
+ 
