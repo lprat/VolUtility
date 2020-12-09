@@ -30,8 +30,8 @@ RUN apt-get update && apt-get install -yq \
 
 # Install Mongo
 RUN \
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927 && \
-echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list && \
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E52529D4 && \
+echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list && \
 apt-get update && \
 apt-get install -yq mongodb-org
 
