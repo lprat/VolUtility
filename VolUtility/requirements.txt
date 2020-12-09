@@ -19,6 +19,6 @@ pytz==2018.7
 requests==2.20.1
 urllib3==1.24.2
 virustotal-api==1.1.10
-Pillow==5.4.1
+Pillow==7.1.0
 yara-python==4.0.2
 git+https://github.com/smarnach/pyexiftool.git#egg=pyexiftool
