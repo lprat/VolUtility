@@ -1,0 +1,26 @@
+From 20ff2b4c0c5d5784843b621887af85a31fc2255a Mon Sep 17 00:00:00 2001
+From: liamnesson0111 <61937129+liamnesson0111@users.noreply.github.com>
+Date: Mon, 23 Nov 2020 13:40:29 +0200
+Subject: [PATCH] Fix kernel version control for proc_dir_entry
+
+The struct proc_dir_entry is used in the plugin linux_check_fop.
+The struct was defined in module.c only in kernel versions greater than 3.13, causing an error when running linux_check_fop on systems with older kernel versions.
+I noticed that this struct hasn't changed at all between kernel versions 3.10 and 3.13, so we can make this plugin support more versions with this fix.
+This change is relatively significant because many distributions are shipped with a 3.10.~ kernel (CentOS 7 and RHEL 7, among others).
+---
+ tools/linux/module.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/linux/module.c b/tools/linux/module.c
+index cd9410d6..de757afe 100644
+--- a/tools/linux/module.c
++++ b/tools/linux/module.c
+@@ -578,7 +578,7 @@ struct mount {
+ 
+ #endif
+ 
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,13,0)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0)
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(3,19,0)
+     struct proc_dir_entry {
+         unsigned int low_ino;
