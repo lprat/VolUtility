@@ -2,10 +2,10 @@ FROM ubuntu:16.04
 MAINTAINER kisec (https://github.com/kisec/VolUtility)
 
 # Version Vars
-ENV YARA_VERSION        3.4.0
-ENV SSDEEP_VERSION      2.13
+ENV YARA_VERSION        4.0.2
+ENV SSDEEP_VERSION      2.14.1
 ENV VOLATILITY_VERSION  2.6.1
-ENV VOLUTILITY_VERSION  1.2.1
+ENV VOLUTILITY_VERSION  1.2.2
 
 # Switch to user root
 USER root
@@ -98,7 +98,8 @@ RUN cd ~/tmp_build && \
 RUN cd ~/tmp_build &&\
  git clone https://github.com/volatilityfoundation/volatility.git && \
  cd volatility && \
- git checkout tags/$VOLATILITY_VERSION && \
+#git checkout tags/$VOLATILITY_VERSION && \
+#Add patch
  python setup.py install
 
 # Create Volutility User
