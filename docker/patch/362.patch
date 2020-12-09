@@ -1,0 +1,31 @@
+From ca42f0c465c9acd9cc0b70e468af23a869e547fa Mon Sep 17 00:00:00 2001
+From: dipolemoment <dipolemoment@protonmail.com>
+Date: Sat, 28 Jan 2017 22:10:44 +0000
+Subject: [PATCH] Fix detection of base address space in psxview.
+
+Fixes #361
+---
+ volatility/plugins/malware/psxview.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/volatility/plugins/malware/psxview.py b/volatility/plugins/malware/psxview.py
+index 330bc812..5f78d120 100644
+--- a/volatility/plugins/malware/psxview.py
++++ b/volatility/plugins/malware/psxview.py
+@@ -101,14 +101,14 @@ def get_file_offset(process):
+         address = process.obj_offset
+ 
+         # we're already at the file layer (i.e. psscan on a raw memory image)
+-        if isinstance(addr_space, standard.FileAddressSpace):
++        if addr_space.base == None:
+             return address
+ 
+         paddr = addr_space.translate(address)
+         offset = paddr
+ 
+         addr_space = addr_space.base 
+-        while not isinstance(addr_space, standard.FileAddressSpace):
++        while addr_space.base != None:
+             offset = addr_space.translate(offset)
+             # device memory addresses won't translate, so restore the original value 
+             if offset == None:
