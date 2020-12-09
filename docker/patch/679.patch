@@ -1,0 +1,47 @@
+From be71a0ec645d1f834239d06f3fead1e244338459 Mon Sep 17 00:00:00 2001
+From: DominikNeubauer <DominikNeubauer+aws@gmail.com>
+Date: Wed, 29 Jan 2020 21:43:45 +0100
+Subject: [PATCH] Update tcpip_vtypes.py
+
+CreateTime was not shown for 15063 and above at all; TcpE struct has changed slightly with Redstone 3 as well and is reflected, too.
+---
+ .../plugins/overlays/windows/tcpip_vtypes.py  | 20 ++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
+
+diff --git a/volatility/plugins/overlays/windows/tcpip_vtypes.py b/volatility/plugins/overlays/windows/tcpip_vtypes.py
+index 25f55b45..1bd86f6d 100644
+--- a/volatility/plugins/overlays/windows/tcpip_vtypes.py
++++ b/volatility/plugins/overlays/windows/tcpip_vtypes.py
+@@ -501,7 +501,7 @@ def modification(self, profile):
+         profile.vtypes.update(tcpip_vtypes_win_10_x64)
+         
+ class Win10x64_15063_Tcpip(obj.ProfileModification):
+-    """TCP Endpoint for Creators and Fall Creators"""
++    """TCP Endpoint for Redstone 2"""
+     
+     before = ['Win10x64Tcpip']
+     conditions = {'os': lambda x: x == 'windows',
+@@ -513,5 +513,23 @@ def modification(self, profile):
+         profile.merge_overlay({
+             '_TCP_ENDPOINT': [ None, {
+                 'Owner' : [ 0x270, ['pointer', ['_EPROCESS']]],
++                'CreateTime' : [ 0x280, ['WinTimeStamp', dict(is_utc = True)]],
++                }],
++            })
++
++class Win10x64_16299_Tcpip(obj.ProfileModification):
++    """TCP Endpoint for Redstone 3 and above"""
++    
++    before = ['Win10x64_15063_Tcpip']
++    conditions = {'os': lambda x: x == 'windows',
++                  'memory_model': lambda x: x == '64bit',
++                  'major': lambda x : x == 6,
++                  'minor': lambda x : x == 4,
++                  'build': lambda x : x >= 16299}
++    def modification(self, profile):
++        profile.merge_overlay({
++            '_TCP_ENDPOINT': [ None, {
++                'Owner' : [ 0x278, ['pointer', ['_EPROCESS']]],
++                'CreateTime' : [ 0x288, ['WinTimeStamp', dict(is_utc = True)]],
+                 }],
+             })
