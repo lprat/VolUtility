@@ -309,7 +309,12 @@ class RunVol:
                     return None
                 output_data = self.get_text(command)
                 return output_data
-
+            elif plugin_name == 'lsadump':
+                output_data = self.get_text(command)
+                return output_data
+            elif plugin_name == 'clipboard':
+                output_data = self.get_text(command)
+                return output_data
             # All other plugins
             else:
                 if output_style == 'json':
