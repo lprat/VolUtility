@@ -1,0 +1,41 @@
+From 7f4c2352fa4c19ec3725ec072163be70f8131e1f Mon Sep 17 00:00:00 2001
+From: Benjamin Taubmann <bt@sec.uni-passau.de>
+Date: Wed, 25 Mar 2020 17:10:20 +0100
+Subject: [PATCH] Fix for Win10x64_18362 to find owner in netscan
+
+---
+ .../plugins/overlays/windows/tcpip_vtypes.py   | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/volatility/plugins/overlays/windows/tcpip_vtypes.py b/volatility/plugins/overlays/windows/tcpip_vtypes.py
+index 25f55b45..6b13f52b 100644
+--- a/volatility/plugins/overlays/windows/tcpip_vtypes.py
++++ b/volatility/plugins/overlays/windows/tcpip_vtypes.py
+@@ -508,10 +508,26 @@ class Win10x64_15063_Tcpip(obj.ProfileModification):
+                   'memory_model': lambda x: x == '64bit',
+                   'major': lambda x : x == 6,
+                   'minor': lambda x : x == 4,
+-                  'build': lambda x : x >= 15063}
++                  'build': lambda x : x == 15063}
+     def modification(self, profile):
+         profile.merge_overlay({
+             '_TCP_ENDPOINT': [ None, {
+                 'Owner' : [ 0x270, ['pointer', ['_EPROCESS']]],
+                 }],
+             })
++
++class Win10x64_18362_Tcpip(obj.ProfileModification):
++    """TCP Endpoint for Creators and Fall Creators"""
++    
++    before = ['Win10x64Tcpip']
++    conditions = {'os': lambda x: x == 'windows',
++                  'memory_model': lambda x: x == '64bit',
++                  'major': lambda x : x == 6,
++                  'minor': lambda x : x == 4,
++                  'build': lambda x : x == 18362}
++    def modification(self, profile):
++        profile.merge_overlay({
++            '_TCP_ENDPOINT': [ None, {
++                'Owner' : [ 0x298, ['pointer', ['_EPROCESS']]],
++                }],
++            })
