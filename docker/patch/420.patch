@@ -1,0 +1,76 @@
+From bb75ff714068bd0faa8790f19c07d69bf4b51451 Mon Sep 17 00:00:00 2001
+From: Bastian Neuburger <b.neuburger@gsi.de>
+Date: Fri, 12 May 2017 10:01:50 +0200
+Subject: [PATCH 1/2] Fix KASLR handling in linux overlay
+
+---
+ volatility/plugins/overlays/linux/linux.py | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/volatility/plugins/overlays/linux/linux.py b/volatility/plugins/overlays/linux/linux.py
+index e86a2fd8..13de8c82 100644
+--- a/volatility/plugins/overlays/linux/linux.py
++++ b/volatility/plugins/overlays/linux/linux.py
+@@ -219,7 +219,7 @@ def __init__(self, *args, **kwargs):
+         def clear(self):
+             """Clear out the system map, and everything else"""
+             self.sys_map = {}
+-            self.virutal_shift = 0
++            self.virtual_shift = 0
+             self.physical_shift = 0
+             obj.Profile.clear(self)
+ 
+@@ -2265,9 +2265,9 @@ def generate_suggestions(self):
+ 
+         good_dtb = -1
+             
+-        init_task_addr = tbl["init_task"][0][0] + physical_shift_address
+-        dtb_sym_addr   = tbl[sym][0][0] + physical_shift_address
+-        files_sym_addr = tbl["init_files"][0][0] + physical_shift_address
++        init_task_addr = tbl["init_task"][0][0] + virtual_shift_address
++        dtb_sym_addr   = tbl[sym][0][0] + virtual_shift_address
++        files_sym_addr = tbl["init_files"][0][0] + virtual_shift_address
+        
+         comm_offset   = profile.get_obj_offset("task_struct", "comm")
+         pid_offset    = profile.get_obj_offset("task_struct", "pid")
+@@ -2276,7 +2276,7 @@ def generate_suggestions(self):
+         pas           = self.obj_vm
+         
+         if physical_shift_address != 0 and virtual_shift_address != 0:
+-            good_dtb  = dtb_sym_addr - shifts[0]
++            good_dtb  = dtb_sym_addr - shifts[0] + physical_shift_address - virtual_shift_address
+             self.obj_vm.profile.physical_shift = physical_shift_address 
+             self.obj_vm.profile.virtual_shift  = virtual_shift_address
+ 
+
+From 630b5519658be5f24a47f13644aa973271db251b Mon Sep 17 00:00:00 2001
+From: Bastian Neuburger <b.neuburger@gsi.de>
+Date: Fri, 12 May 2017 10:19:49 +0200
+Subject: [PATCH 2/2] Remove active_mm check in Linux DTB finder
+
+If this check is active the DTB scanner won't find a valid DTB in my
+4.9 KASLR samples.
+After commenting this out it just works.
+---
+ volatility/plugins/overlays/linux/linux.py | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/volatility/plugins/overlays/linux/linux.py b/volatility/plugins/overlays/linux/linux.py
+index 13de8c82..e8a1a97c 100644
+--- a/volatility/plugins/overlays/linux/linux.py
++++ b/volatility/plugins/overlays/linux/linux.py
+@@ -2306,10 +2306,10 @@ def generate_suggestions(self):
+                 if pas.read(swapper_address + pid_offset, 4) != "\x00\x00\x00\x00":
+                     continue
+ 
+-                mm_buf = pas.read(swapper_address + mm_offset, read_sz)
+-                mm_addr = struct.unpack(fmt, mm_buf)[0]
+-                if mm_addr == 0:
+-                    continue
++                #mm_buf = pas.read(swapper_address + mm_offset, read_sz)
++                #mm_addr = struct.unpack(fmt, mm_buf)[0]
++                #if mm_addr == 0:
++                #    continue
+ 
+                 tmp_shift_address = swapper_address - (init_task_addr - shifts[0])
+                 if tmp_shift_address & 0xfff != 0x000:
