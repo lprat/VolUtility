@@ -59,11 +59,11 @@ RUN cd ~/tmp_build && \
 RUN cd ~/tmp_build &&\
  curl -sSL https://github.com/ssdeep-project/ssdeep/releases/download/release-2.14.1/ssdeep-2.14.1.tar.gz | \
  tar -xzC .  && \
- cd ssdeep-${SSDEEP_VERSION} && \
+ cd ssdeep-2.14.1 && \
  ./configure && \
  make install && \
  cd .. && \
- rm -rf ssdeep-${SSDEEP_VERSION} && \
+ rm -rf ssdeep-2.14.1 && \
  ldconfig
 
 # Install pydeep
