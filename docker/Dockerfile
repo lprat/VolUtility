@@ -111,8 +111,8 @@ RUN cd ~/tmp_build &&\
  python setup.py install
 
 # Create Volutility User
-RUN groupadd -r volutility && \
- useradd -r -g volutility -d /home/volutility -s /sbin/nologin -c "Volutility User" volutility && \
+RUN groupadd -r volutility -g 1000 && \
+ useradd -r -u 1000 -g volutility -d /home/volutility -s /sbin/nologin -c "Volutility User" volutility && \
  usermod -a -G sudo volutility  && \
  mkdir /home/volutility && \
  chown -R volutility:volutility /home/volutility
