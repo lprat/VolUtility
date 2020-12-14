@@ -113,10 +113,6 @@ RUN cd ~/tmp_build &&\
 #install plugin
 RUN mkdir /opt/plugins
 RUN pip install distorm3==3.4.4 construct==2.5.5-reupload pefile pycrypto PySocks==1.7.1
-RUN cd /tmp \
-  && git clone https://bitbucket.org/jmichel/dpapick \
-  && cd /tmp/dpapick \
-  && python setup.py install 
 RUN mkdir /opt/plugins/cobalt && \
         wget -O /opt/plugins/cobalt/cobaltstrikescan.py  https://raw.githubusercontent.com/JPCERTCC/aa-tools/master/cobaltstrikescan.py
 RUN cd /tmp && git clone https://github.com/JPCERTCC/MalConfScan.git && pip install -r MalConfScan/requirements.txt && \
