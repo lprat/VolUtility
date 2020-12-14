@@ -110,6 +110,40 @@ RUN cd ~/tmp_build &&\
 #Add patch
  python setup.py install
 
+#install plugin
+RUN mkdir /opt/plugins
+RUN pip install distorm3==3.4.4 construct==2.5.5-reupload pefile pycrypto PySocks==1.7.1
+RUN cd /tmp \
+  && git clone https://bitbucket.org/jmichel/dpapick \
+  && cd /tmp/dpapick \
+  && python setup.py install 
+RUN mkdir /opt/plugins/cobalt && \
+        wget -O /opt/plugins/cobalt/cobaltstrikescan.py  https://raw.githubusercontent.com/JPCERTCC/aa-tools/master/cobaltstrikescan.py
+RUN cd /tmp && git clone https://github.com/JPCERTCC/MalConfScan.git && pip install -r MalConfScan/requirements.txt && \
+  cp -R MalConfScan/malconfscan.py MalConfScan/utils/ MalConfScan/yara/ /opt/plugins
+ RUN  cd /opt/plugins \
+  && git clone https://github.com/volatilityfoundation/community.git \
+  && cd community \
+  && rm -rf /opt/plugins/community/AlexanderTarasenko \
+  && rm -rf /opt/plugins/community/MarcinUlikowski \
+  && cd /tmp \
+  && git clone --recursive --branch v0.2.2 https://github.com/mandiant/ioc_writer.git \
+  && cd ioc_writer \
+  && python setup.py install
+RUN cd /opt/plugins/community/YingLi \
+  && touch __init__.py \
+  && cd /opt/plugins/community/StanislasLejay/linux \
+  && touch __init__.py \
+  && cd /opt/plugins/community/DatQuoc \
+  && touch __init__.py \
+  && cd /opt/plugins/community/DimaPshoul \
+  && sed -i 's/import volatility.plugins.malware.callstacks as/import/' malthfind.py
+RUN git clone https://github.com/mnemonic-no/dnscache /opt/plugins/dnscache/
+
+#yara rules
+RUN mkdir /opt/yara
+RUN git clone https://github.com/Neo23x0/signature-base /opt/yara/signature-base/
+
 # Create Volutility User
 RUN groupadd -r volutility -g 1000 && \
  useradd -r -u 1000 -g volutility -d /home/volutility -s /sbin/nologin -c "Volutility User" volutility && \
