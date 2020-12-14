@@ -96,7 +96,7 @@ RUN cd ~/tmp_build && \
  ldconfig
 
 # Install Volatility
-ADD patch /opt/patch-vol
+ADD patch /opt/patch
 RUN cd ~/tmp_build &&\
  git clone https://github.com/volatilityfoundation/volatility.git && \
  cd volatility && \
