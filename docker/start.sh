@@ -1,6 +1,6 @@
 #!/bin/bash
 echo Starting MongoDB
-mongod --fork --logpath /home/volutility/logs/mongodb.log --dbpath /home/volutility/dbpath/
+mongod --fork --logpath /opt/VolUtility/logs/mongodb.log --dbpath /opt/VolUtility/dbpath/
 sleep 5
 echo Django migrate
 python manage.py migrate
