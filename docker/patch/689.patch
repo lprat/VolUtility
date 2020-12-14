@@ -1,3 +1,13 @@
+From ed16cf1d37969de2a54d5634864b65fe928961d1 Mon Sep 17 00:00:00 2001
+From: "U-BASIS\\cray" <cray@win-cray-2910.basistech.net>
+Date: Tue, 10 Mar 2020 22:28:46 -0400
+Subject: [PATCH] Minor fix to malfind
+
+Specifying -W does not currently get applied to unified output, just text output. Update includes refined results for unified output.
+---
+ volatility/plugins/malware/malfind.py | 5 +++++
+ 1 file changed, 5 insertions(+)
+
 diff --git a/volatility/plugins/malware/malfind.py b/volatility/plugins/malware/malfind.py
 index 6fa5113d..55b121ce 100644
 --- a/volatility/plugins/malware/malfind.py
