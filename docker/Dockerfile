@@ -76,7 +76,7 @@ RUN pip install https://github.com/williballenthin/vivisect/zipball/master && pi
 RUN pip install capstone
 
 #install pdbparse
-RUN pip install pdbparse
+RUN pip install pdbparse==1.2
 
 # Get the maxmind database for ip lookup
 RUN cd ~/tmp_build && \
