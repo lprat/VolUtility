@@ -95,9 +95,20 @@ RUN cd ~/tmp_build && \
  ldconfig
 
 # Install Volatility
+ADD patch /opt/patch-vol
 RUN cd ~/tmp_build &&\
  git clone https://github.com/volatilityfoundation/volatility.git && \
  cd volatility && \
+ patch -fN < /opt/patch/483.patch && \
+ patch -fN < /opt/patch/553.patch && \
+ patch -fN < /opt/patch/553.patch && \
+ patch -fN < /opt/patch/641.patch && \
+ patch -fN < /opt/patch/642.patch && \
+ patch -fN < /opt/patch/669.patch && \
+ patch -fN < /opt/patch/679.patch && \
+ patch -fN < /opt/patch/689.patch && \
+ patch -fN < /opt/patch/694.patch && \
+ patch -fN < /opt/patch/729.patch && \
 #git checkout tags/$VOLATILITY_VERSION && \
 #Add patch
  python setup.py install
