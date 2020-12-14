@@ -3,7 +3,6 @@ MAINTAINER kisec (https://github.com/kisec/VolUtility)
 
 # Version Vars
 ENV YARA_VERSION        4.0.2
-ENV SSDEEP_VERSION      2.14.1
 ENV VOLATILITY_VERSION  2.6.1
 ENV VOLUTILITY_VERSION  1.2.2
 
@@ -58,7 +57,7 @@ RUN cd ~/tmp_build && \
 
 # Install SSDEEP
 RUN cd ~/tmp_build &&\
- curl -sSL http://sourceforge.net/projects/ssdeep/files/ssdeep-${SSDEEP_VERSION}/ssdeep-${SSDEEP_VERSION}.tar.gz/download | \
+ curl -sSL https://github.com/ssdeep-project/ssdeep/releases/download/release-2.14.1/ssdeep-2.14.1.tar.gz | \
  tar -xzC .  && \
  cd ssdeep-${SSDEEP_VERSION} && \
  ./configure && \
