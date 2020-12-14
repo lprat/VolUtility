@@ -80,8 +80,7 @@ RUN pip install pdbparse==1.2
 
 # Get the maxmind database for ip lookup
 RUN cd ~/tmp_build && \
- curl -sSL http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz > GeoLite2-City.mmdb.gz && \
- gzip -d GeoLite2-City.mmdb.gz && \
+ curl -sSL https://github.com/kisec/VolUtility/raw/master/extra/docker/GeoLite2-City.mmdb > GeoLite2-City.mmdb && \
  mkdir /usr/share/GeoIP/ && \
  mv GeoLite2-City.mmdb /usr/share/GeoIP/
 
