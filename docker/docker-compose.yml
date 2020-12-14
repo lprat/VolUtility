@@ -21,8 +21,6 @@ services:
         volumes:
             - ../data:/opt/images
             - ./volutility.conf:/home/volutility/.volutility.conf
-            - ../dbpath:/home/volutility/dbpath/
-            - ../logs-mongo:/home/volutility/logs/
             - ../VolUtility:/opt/VolUtility
         logging:
             driver: "json-file"
