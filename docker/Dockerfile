@@ -141,6 +141,6 @@ RUN sudo apt-get clean
 USER volutility
 WORKDIR /opt/VolUtility
 ADD start.sh start.sh
-RUN mkdir ~/dbpath
-RUN chmod 755 ~/dbpath
+RUN mkdir /opt/VolUtility/dbpath
+RUN chmod 755 /opt/VolUtility/dbpath
 CMD /bin/bash /opt/VolUtility/start.sh
