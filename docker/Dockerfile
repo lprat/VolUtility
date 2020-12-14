@@ -47,7 +47,9 @@ RUN cd ~/tmp_build && \
  cd yara-$YARA_VERSION && \
  bash build.sh && \
  make install && \
- cd yara-python && \
+ curl -sSL https://github.com/VirusTotal/yara-python/archive/v$YARA_VERSION.tar.gz | \
+ tar -xzC . && \
+ cd yara-python-$YARA_VERSION && \
  python setup.py build && \
  python setup.py install && \
  cd ../.. && \
