@@ -122,10 +122,6 @@ RUN cd /tmp && git clone https://github.com/JPCERTCC/MalConfScan.git && pip inst
   && cd community \
   && rm -rf /opt/plugins/community/AlexanderTarasenko \
   && rm -rf /opt/plugins/community/MarcinUlikowski \
-  && cd /tmp \
-  && git clone --recursive --branch v0.2.2 https://github.com/mandiant/ioc_writer.git \
-  && cd ioc_writer \
-  && python setup.py install
 RUN cd /opt/plugins/community/YingLi \
   && touch __init__.py \
   && cd /opt/plugins/community/StanislasLejay/linux \
