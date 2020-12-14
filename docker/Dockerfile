@@ -132,7 +132,8 @@ RUN cd /opt/plugins/community/YingLi \
   && cd /opt/plugins/community/DimaPshoul \
   && sed -i 's/import volatility.plugins.malware.callstacks as/import/' malthfind.py
 RUN git clone https://github.com/mnemonic-no/dnscache /opt/plugins/dnscache/
-
+RUN cp /opt/plugins/community/CesarePizzi/powersh.py /opt/plugins_ok/ && \
+  cp /opt/plugins/community/CesarePizzi/powersh.py /opt/plugins_ok/
 #yara rules
 RUN mkdir /opt/yara
 RUN git clone https://github.com/Neo23x0/signature-base /opt/yara/signature-base/
