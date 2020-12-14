@@ -32,7 +32,9 @@ RUN apt-get update && apt-get install -yq \
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E52529D4 && \
 echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list && \
 apt-get update && \
-apt-get install -yq mongodb-org
+ln -s /bin/true /usr/local/bin/systemctl && \
+apt-get install -yq mongodb-org && \
+rm /usr/local/bin/systemctl
 
 # Install packages from source
 # Make Tmp Dir
@@ -40,7 +42,7 @@ RUN mkdir ~/tmp_build
 
 # Install Yara
 RUN cd ~/tmp_build && \
- curl -sSL https://github.com/plusvic/yara/archive/v$YARA_VERSION.tar.gz | \
+ curl -sSL https://github.com/VirusTotal/yara/archive/v$YARA_VERSION.tar.gz | \
  tar -xzC . && \
  cd yara-$YARA_VERSION && \
  bash build.sh && \
